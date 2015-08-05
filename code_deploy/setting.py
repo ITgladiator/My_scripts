@@ -13,7 +13,7 @@ log_file = "/Users/gladiator/deploy/tmp/current_ver.log"
 svn_config = {
     "svn_url": "svn://192.168.1.221/cms",
     "svn_user": "deploy",
-    "svn_pass": "x..18610876365..",
+    "svn_pass": "123",
     "svn_library": "cms"
 }
 
@@ -32,13 +32,13 @@ tar_config = {
 }
 
 webtest_config = {
-    "login_url": "http://crm.fcgtech.com/admin/public/login.html",
-    "post_url": "http://crm.fcgtech.com/admin/public/login.html?s=/Admin/public/login.html",
+    "login_url": "http://crm.test.com/admin/public/login.html",
+    "post_url": "http://crm.test.com/admin/public/login.html?s=/Admin/public/login.html",
     "post_data": {
         'username': 'admin',
-        'password': '111111',
+        'password': '123',
         'verify': 'undefined',
     },
-    "test_url": "http://crm.fcgtech.com/crm/companion/index.html",
+    "test_url": "http://crm.test.com/crm/companion/index.html",
     "keyword": r"项目",
 }
