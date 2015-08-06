@@ -2,14 +2,16 @@
 # encoding:utf-8
 
 import paramiko
+import os
+import commands
 
 
 def sendfile(host, port, user, pkey_file, src_filename, dst_filename):
+    print "\033[33;1mBegin send file to %s\033[0m" % host
+    s = paramiko.SSHClient()
+    s.load_system_host_keys()
+    s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     try:
-        s = paramiko.SSHClient()
-        s.load_system_host_keys()
-        s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-
         t = paramiko.Transport((host, port))
         key = paramiko.RSAKey.from_private_key_file(pkey_file)
         t.connect(username=user, pkey=key)
@@ -22,6 +24,9 @@ def sendfile(host, port, user, pkey_file, src_filename, dst_filename):
     except:
         status = -1
         return status
+
+
+
 
 
 

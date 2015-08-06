@@ -3,6 +3,7 @@
 
 import tarfile
 import os
+import commands
 
 
 def get_tar(dirname, dst_dir):
@@ -22,11 +23,6 @@ def get_tar(dirname, dst_dir):
 
 # if __name__ == "__main__":
 #     get_tar("/Users/gladiator/Documents/workspace/my_scripts/tmp/a", "/Users/gladiator/Documents/workspace/my_scripts/tardst")
-
-
-def untar(untar_file, untar_dstdir):
-    t = tarfile.open(untar_file)
-    t.extractall(path=untar_dstdir)
 
 
 # if __name__ == "__main__":

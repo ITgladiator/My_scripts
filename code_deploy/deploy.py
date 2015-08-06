@@ -11,6 +11,7 @@ import setting
 import shutil
 import send_file
 import webtest
+from multiprocessing import Process, Pool
 
 log_file = setting.log_file
 web_root = setting.deploy_config["web_root"]  # 远端服务器的web根目录
@@ -92,33 +93,43 @@ Filename : %s\033[0m''' % full_tar_filename
     prod_tmp = setting.deploy_config["prod_tmp"]
     dst_filename = prod_tmp + "/" + tar_filename
     print "\033[33;1mbegin send, untar file and make soft_link...\033[0m"
-    for host in hosts_list:
-        send_status = send_file.sendfile(host, port, user, pkey_file, full_tar_filename, dst_filename)
-        if send_status == 0:
+
+
+    # 定义发送文件、解压文件、删除已有软链接和创建新软链接的方法
+    def send_untar_mksl(host, port, user, pkey_file, full_tar_filename, dst_filename, untar_cmd, rm_sl_cmd, sl_cmd):
+        status = send_file.sendfile(host, port, user, pkey_file, full_tar_filename, dst_filename)
+        if status == 0:
             print "\033[32;1mOK! Send file to %s sucessfull!\033[0m" % host
+            untar_status, untar_result = commands.getstatusoutput(untar_cmd)
+            if untar_status == 0:
+                print "\033[32;1mOK! Untar file on %s sucessfull!\033[0m" % host
+                try:
+                    os.popen(rm_sl_cmd)
+                except:
+                    pass
+                sl_status, sl_result = commands.getstatusoutput(sl_cmd)
+                if sl_status == 0:
+                    print "\033[32;1mOK! Make soft_link on %s sucessfull!\033[0m" % host
+                else:
+                    print "\033[31;1mERROR! Make soft_link on %s failed!\033[0m" % host 
+            else:
+                print "\033[31;1mERROR! Untar file on %s failed!\033[0m" % host
         else:
             print "\033[31;1mERROR! Send file to %s failed!\033[0m" % host
 
-        untar_cmd = 'ssh ' + user + '@' + host + ' "' + 'cd ' + prod_tmp + ' && tar zxf ' + tar_filename + '"'
-        untar_status, untar_result = commands.getstatusoutput(untar_cmd)
-        if untar_status == 0:
-            print "\033[32;1mOK! Untar file on %s sucessfull!\033[0m" % host
-        else:
-            print "\033[31;1mERROR! Untar file on %s failed!\033[0m" % host
-
-        sl_src = prod_tmp + "/" + code_dir  # 需要做软链接的目录
-        sl_dst = web_root + "/" + svn_library  # 软链接位置：/data/website/cms
+    sl_src = prod_tmp + "/" + code_dir  # 需要做软链接的目录
+    sl_dst = web_root + "/" + svn_library  # 软链接位置：/data/website/cms
+    pool = Pool(processes=4)
+    result_list = []
+    for host in hosts_list:
         sl_cmd = "ssh " + user + "@" + host + " ln -s " + sl_src + " " + sl_dst  # 创建软链接命令
         rm_sl_cmd = "ssh " + user + "@" + host + " rm -f " + sl_dst  # 删除已有软链接的命令
-        try:
-            os.popen(rm_sl_cmd)
-        except:
-            pass
-        sl_status, sl_result = commands.getstatusoutput(sl_cmd)
-        if sl_status == 0:
-            print "\033[32;1mOK! Make soft_link on %s sucessfull!\033[0m" % host
-        else:
-            print "\033[31;1mERROR! Make soft_link on %s failed!\033[0m" % host
+        untar_cmd = 'ssh ' + user + '@' + host + ' "' + 'cd ' + prod_tmp + ' && tar zxf ' + tar_filename + '"'
+        result = pool.apply_async(send_untar_mksl, [host, port, user, pkey_file, full_tar_filename, dst_filename, untar_cmd, rm_sl_cmd, sl_cmd])
+        result_list.append(result)
+    for r in result_list:
+        r.get()
+
 
 # ========================================================================================================
         # Upload 目录和 data目录为用户上传的文件目录，放在web根目录，软链接到程序目录
