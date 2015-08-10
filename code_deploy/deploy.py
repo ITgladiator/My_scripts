@@ -5,13 +5,10 @@ import sys
 import os
 import time
 import commands
-import my_tar
-import get_svn
-import setting
+from core import my_tar, get_svn, send_file, webtest
 import shutil
-import send_file
-import webtest
-from multiprocessing import Process, Pool
+from multiprocessing import Pool
+from conf import setting
 
 log_file = setting.log_file
 web_root = setting.deploy_config["web_root"]  # 远端服务器的web根目录
@@ -21,6 +18,7 @@ post_url = setting.webtest_config["post_url"]
 post_data = setting.webtest_config["post_data"]
 test_url = setting.webtest_config["test_url"]
 keyword = setting.webtest_config["keyword"]
+
 
 
 def usage():
