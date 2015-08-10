@@ -127,6 +127,12 @@ Filename : %s\033[0m''' % full_tar_filename
         result_list.append(result)
     for r in result_list:
         r.get()
+    rmdir_cmd = "cd " + deploy_tmp_dir + " && rm -rf " + code_dir
+    rmfile_cmd = "cd " + deploy_tmp_dir + " && rm -rf " + code_dir + ".tar.gz"
+    print rmdir_cmd
+    print rmfile_cmd
+    os.popen(rmdir_cmd)
+    os.popen(rmfile_cmd)
 
 
 # ========================================================================================================
