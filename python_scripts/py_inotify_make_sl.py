@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # encoding:utf-8
+# 监控目录创建操作，在创建的目录里创建软链接，前提该目录下只会创建目录
 
 
 import pyinotify
