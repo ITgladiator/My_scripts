@@ -9,7 +9,7 @@
 ##发布流程
 
 ###流程图
-![Alt text](./部署流程图.png)
+![Alt text](/images/deploy.png)
 
 ###发布过程
 1. 从SVN服务器checkout到本地
