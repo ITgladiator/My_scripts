@@ -137,15 +137,15 @@ Filename : %s\033[0m''' % full_tar_filename
 
 # ========================================================================================================
         # Upload 目录和 data目录为用户上传的文件目录，放在web根目录，软链接到程序目录
-        dir_list = ["Upload", "data"]
-        for ln_dir in dir_list:
-            sl_cmd = "ssh " + user + "@" + host + " ln -s " + web_root + "/" + ln_dir + " " + sl_dst + "/"
-            rm_sl_cmd = "ssh " + user + "@" + host + " rm -rf " + sl_dst + "/" + ln_dir
-            try:
-                os.popen(rm_sl_cmd)
-            except:
-                pass
-            os.popen(sl_cmd)
+    dir_list = ["Upload", "data"]
+    for ln_dir in dir_list:
+        sl_cmd = "ssh " + user + "@" + host + " ln -s " + web_root + "/" + ln_dir + " " + sl_dst + "/"
+        rm_sl_cmd = "ssh " + user + "@" + host + " rm -rf " + sl_dst + "/" + ln_dir
+        try:
+            os.popen(rm_sl_cmd)
+        except:
+            pass
+        os.popen(sl_cmd)
 # ========================================================================================================
 
     webtest.deploy_test(login_url, post_url, post_data, test_url, keyword)
