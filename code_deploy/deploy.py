@@ -5,7 +5,7 @@ import sys
 import os
 import time
 import commands
-from core import my_tar, get_svn, send_file, webtest
+from core import my_tar, get_svn, send_file, webtest, sendConfigFile
 import shutil
 from multiprocessing import Pool
 from conf import setting
@@ -20,9 +20,8 @@ test_url = setting.webtest_config["test_url"]
 keyword = setting.webtest_config["keyword"]
 
 
-
 def usage():
-    print "Usage: " + sys.argv[0] +" [deploy | rollback-list | rollback-pro host ver]"
+    print "Usage: " + sys.argv[0] + " [deploy | rollback-list | rollback-pro host ver]"
 
 
 if len(sys.argv) < 2:
@@ -92,7 +91,6 @@ Filename : %s\033[0m''' % full_tar_filename
     dst_filename = prod_tmp + "/" + tar_filename
     print "\033[33;1mbegin send, untar file and make soft_link...\033[0m"
 
-
     # 定义发送文件、解压文件、删除已有软链接和创建新软链接的方法
     def send_untar_mksl(host, port, user, pkey_file, full_tar_filename, dst_filename, untar_cmd, rm_sl_cmd, sl_cmd):
         status = send_file.sendfile(host, port, user, pkey_file, full_tar_filename, dst_filename)
@@ -109,7 +107,7 @@ Filename : %s\033[0m''' % full_tar_filename
                 if sl_status == 0:
                     print "\033[32;1mOK! Make soft_link on %s sucessfull!\033[0m" % host
                 else:
-                    print "\033[31;1mERROR! Make soft_link on %s failed!\033[0m" % host 
+                    print "\033[31;1mERROR! Make soft_link on %s failed!\033[0m" % host
             else:
                 print "\033[31;1mERROR! Untar file on %s failed!\033[0m" % host
         else:
@@ -123,6 +121,7 @@ Filename : %s\033[0m''' % full_tar_filename
         sl_cmd = "ssh " + user + "@" + host + " ln -s " + sl_src + " " + sl_dst  # 创建软链接命令
         rm_sl_cmd = "ssh " + user + "@" + host + " rm -f " + sl_dst  # 删除已有软链接的命令
         untar_cmd = 'ssh ' + user + '@' + host + ' "' + 'cd ' + prod_tmp + ' && tar zxf ' + tar_filename + '"'
+#        chuser_cmd = "ssh " + user + "@" + host + " chown -R " + webuser + "." + webgroup + " " + sl_dst
         result = pool.apply_async(send_untar_mksl, [host, port, user, pkey_file, full_tar_filename, dst_filename, untar_cmd, rm_sl_cmd, sl_cmd])
         result_list.append(result)
     for r in result_list:
@@ -136,18 +135,34 @@ Filename : %s\033[0m''' % full_tar_filename
 
 
 # ========================================================================================================
-        # Upload 目录和 data目录为用户上传的文件目录，放在web根目录，软链接到程序目录
-    dir_list = ["Upload", "data"]
+    # Upload 目录和 data目录为用户上传的文件目录，放在web根目录，软链接到程序目录
+    dir_list = ["Uploads", "data"]
     for ln_dir in dir_list:
-        sl_cmd = "ssh " + user + "@" + host + " ln -s " + web_root + "/" + ln_dir + " " + sl_dst + "/"
-        rm_sl_cmd = "ssh " + user + "@" + host + " rm -rf " + sl_dst + "/" + ln_dir
-        try:
-            os.popen(rm_sl_cmd)
-        except:
-            pass
-        os.popen(sl_cmd)
+        for host in hosts_list:
+            sl_cmd = "ssh " + user + "@" + host + " ln -s " + web_root + "/" + ln_dir + " " + sl_dst + "/"
+            rm_sl_cmd = "ssh " + user + "@" + host + " rm -rf " + sl_dst + "/" + ln_dir
+            try:
+                os.popen(rm_sl_cmd)
+            except:
+                pass
+            os.popen(sl_cmd)
 # ========================================================================================================
+    #  发送配置文件
+    sendConfigFile.sendConfig()
 
+    # 更改webroot 属主数组
+    webuser = setting.deploy_config["webuser"]
+    webgroup = setting.deploy_config["webuser_group"]
+    for host in hosts_list:
+        chuser_cmd = "ssh " + user + "@" + host + " chown -R " + webuser + "." + webgroup + " " + sl_dst + "/"
+        chuser_status, chuser_r = commands.getstatusoutput(chuser_cmd)
+        if chuser_status == 0:
+            print "\033[32;1mOK! Chown the webroot on %s sucessfull!\033[0m" % host
+        else:
+            print "\033[31;1mERROR! Chown the webroot on %s failed!\033[0m" % host
+
+    # 测试网站登录
+    time.sleep(1)
     webtest.deploy_test(login_url, post_url, post_data, test_url, keyword)
 
     print "*****************************\033[32;1m END \033[0m*****************************"
