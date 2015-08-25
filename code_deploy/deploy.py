@@ -180,7 +180,7 @@ elif sys.argv[1] == "rollback-list":
 %s
             ''' % (host,ls_result)
         else:
-            print "\033[31;1mERROR! Ls failed!\033[0m"
+            print "\033[31;1mERROR! %s Ls failed!\033[0m" % host
 
 elif len(sys.argv) == 4 and sys.argv[1] == "rollback-pro":
     host = sys.argv[2]
@@ -200,7 +200,7 @@ elif len(sys.argv) == 4 and sys.argv[1] == "rollback-pro":
     r_status, r_ruslt = commands.getstatusoutput(rollback_cmd)
     # ========================================================================================================
     # Upload 目录和 data目录为用户上传的文件目录，放在web根目录，软链接到程序目录
-    dir_list = ["Upload", "data"]
+    dir_list = ["Uploads", "data"]
     for ln_dir in dir_list:
         sl_cmd = "ssh " + user + "@" + host + " ln -s " + web_root + "/" + ln_dir + " " + sl_dst + "/"
         rm_sl_cmd = "ssh " + user + "@" + host + " rm -rf " + sl_dst + "/" + ln_dir

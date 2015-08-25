@@ -2,3 +2,16 @@
 # encoding:utf-8
 
 import commands
+
+
+def sendConfig():
+    cmd = "salt 'prod-node' state.sls cms_config.cms_config env=prod"
+    status, result = commands.getstatusoutput(cmd)
+    if status == 0:
+        print "\033[33;1mOK! Send the config file sucessfull!\033[0m"
+    else:
+        print "\033[31;1mERROR! Send the config file failed!\033[0m"
+
+
+if __name__ == "__main__":
+    sendConfig()

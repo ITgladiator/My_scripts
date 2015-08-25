@@ -6,11 +6,13 @@
 
 import os,commands,datetime,sys
 import rmFile
+import time
 
 bak_user = "backup"
-bak_pass = "123"
-ip = "192.168.1.3"
+bak_pass = "x..backup.123.."
+ip = "112.126.64.212"
 log_file = "/var/log/db_bak.log"
+vpn_script = "/server/scripts/vpn_connect.sh"
 
 today = datetime.datetime.now()
 date_now = today.strftime("%Y-%m-%d_%H%M%S")
@@ -32,7 +34,16 @@ if status == 0:
     if s == 0:
         send_mess = "file send sucessfull"
     else:
-        send_mess = "file send failed"
+        cmd_vpnconn = "/bin/sh " + vpn_script
+        for i in range(3):
+            os.popen(cmd_vpnconn)
+            time.sleep(5)
+            sn,rn = commands.getstatusoutput(rsync_cmd)
+            if sn == 0:
+                send_mess = "file send sucessfull"
+                break
+            else:
+                send_mess = "file send failed"
 else:
     bak_mess = "DB bakcup failed"
 
