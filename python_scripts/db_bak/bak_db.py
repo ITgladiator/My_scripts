@@ -9,8 +9,8 @@ import rmFile
 import time
 
 bak_user = "backup"
-bak_pass = "x..backup.123.."
-ip = "112.126.64.212"
+bak_pass = "123123"
+ip = "10.10.10.10"
 log_file = "/var/log/db_bak.log"
 vpn_script = "/server/scripts/vpn_connect.sh"
 
