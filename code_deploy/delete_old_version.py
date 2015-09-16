@@ -3,7 +3,7 @@
 
 import commands
 import sys
-import setting
+from conf import setting
 
 host = "10.10.10.30"
 user = "root"
