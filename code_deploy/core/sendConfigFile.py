@@ -14,4 +14,4 @@ def sendConfig(nodeName, siteName):
 
 
 if __name__ == "__main__":
-    sendConfig("linux-node3", cms)
+    sendConfig("linux-node3", "cms")
