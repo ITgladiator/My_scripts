@@ -11,7 +11,7 @@ log_file = "/Users/gladiator/deploy/tmp/current_ver.log"
 
 
 svn_config = {
-    "svn_url": "svn://192.168.1.221/cms",
+    "svn_url": "svn://192.168.1.221/",
     "svn_user": "deploy",
     "svn_pass": "123",
     "svn_library": "cms"

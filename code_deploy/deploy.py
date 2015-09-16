@@ -21,7 +21,7 @@ keyword = setting.webtest_config["keyword"]
 
 
 def usage():
-    print "Usage: " + sys.argv[0] + " [deploy | rollback-list | rollback-pro host ver]"
+    print "Usage: " + sys.argv[0] + " [deploy siteName | rollback-list | rollback-pro host ver]"
 
 
 if len(sys.argv) < 2:
@@ -30,11 +30,13 @@ if len(sys.argv) < 2:
 
 elif sys.argv[1] == "deploy":
     # 从svn服务器checkout code 到本地
+    siteName = sys.argv[2]
     dst_dir = setting.deploy_config["svn_checkout_dir"]  # checkout的目录
-    svn_url = setting.svn_config["svn_url"]  # svn地址
+    svn_url = setting.svn_config["svn_url"] + siteName  # svn地址
     svn_user = setting.svn_config["svn_user"]  # svn用户名
     svn_pass = setting.svn_config["svn_pass"]  # svn密码
-    svn_library = setting.svn_config["svn_library"]
+    # svn_library = setting.svn_config["svn_library"]
+    svn_library = siteName
 
     print "\033[33;1mbegin svn checkout...\033[0m"
     # 执行svn命令co代码
