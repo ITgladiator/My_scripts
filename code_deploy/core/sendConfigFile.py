@@ -4,8 +4,8 @@
 import commands
 
 
-def sendConfig():
-    cmd = "salt 'prod-node' state.sls cms_config.cms_config env=prod"
+def sendConfig(nodeName, siteName):
+    cmd = "salt \'" + nodeName + "\' state.sls " + siteName + "_config." + siteName + "_config env=prod"
     status, result = commands.getstatusoutput(cmd)
     if status == 0:
         print "\033[33;1mOK! Send the config file sucessfull!\033[0m"
@@ -14,4 +14,4 @@ def sendConfig():
 
 
 if __name__ == "__main__":
-    sendConfig()
+    sendConfig("linux-node3", cms)
