@@ -10,9 +10,9 @@ def sendConfig(nodeName, siteName):
     status, result = commands.getstatusoutput(cmd)
     a = re.findall("Failed:    0", result)
     if len(a) != 0:
-        print "\033[33;1mOK! Send the config file sucessfull!\033[0m"
+        print "\033[32;1mOK! Send the config file to %s sucessfull!\033[0m" % nodeName
     else:
-        print "\033[31;1mERROR! Send the config file failed!\033[0m"
+        print "\033[31;1mERROR! Send the config file to %s failed!\033[0m" % nodeName
 
 
 if __name__ == "__main__":
