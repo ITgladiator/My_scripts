@@ -138,7 +138,9 @@ Filename : %s\033[0m''' % full_tar_filename
 
 # ========================================================================================================
     # Upload 目录和 data目录为用户上传的文件目录，放在web根目录，软链接到程序目录
-    dir_list = ["Uploads", "data"]
+    dir_list = []
+    dir_list.append(siteName+"_data")
+    dir_list.append(siteName+"_Uploads")
     for ln_dir in dir_list:
         for host in hosts_list:
             sl_cmd = "ssh " + user + "@" + host + " ln -s " + web_root + "/" + ln_dir + " " + sl_dst + "/"
