@@ -5,7 +5,7 @@ import sys
 import os
 import time
 import commands
-from core import my_tar, get_svn, send_file, webtest, sendConfigFile
+from core import my_tar, get_svn, send_file, webtest, sendConfigFile, deleteSvn
 import shutil
 from multiprocessing import Pool
 from conf import setting
@@ -72,6 +72,9 @@ elif sys.argv[1] == "deploy":
     print "src_dir = %s" % src_dir
     print "tar_dir = %s" % tar_dir
     shutil.copytree(src_dir, tar_dir)  # 复制目录并重命名
+
+    # 删除目录中的.svn目录
+    deleteSvn.del_svn_info(tar_dir + "/")
 
     # 打包代码目录
     print "\033[33;1mbegin tar...\033[0m"
