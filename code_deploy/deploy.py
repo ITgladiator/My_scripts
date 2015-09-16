@@ -152,7 +152,9 @@ Filename : %s\033[0m''' % full_tar_filename
             os.popen(sl_cmd)
 # ========================================================================================================
     #  发送配置文件
-    sendConfigFile.sendConfig()
+    nodeName_list = setting.host_config["nodeName_list"]
+    for nodeName in nodeName_list:
+        sendConfigFile.sendConfig(nodeName, siteName)
 
     # 更改webroot 属主数组
     webuser = setting.deploy_config["webuser"]

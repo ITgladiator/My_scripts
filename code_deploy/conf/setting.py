@@ -2,6 +2,7 @@
 
 host_config = {
     "hosts_list": ["10.10.10.30", ],
+    "nodeName_list": ["linux-node3",]
     "port": 22,
     "user": "root",
     "pkey_file": "/root/.ssh/id_rsa",
