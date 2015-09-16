@@ -66,7 +66,7 @@ elif sys.argv[1] == "deploy":
         print "\033[31;1mERROR! Get svn ver Failed!\033[0m"
         sys.exit()
 
-    # 重命名后的目录名：prod_cmd_123_2015-08-02
+    # 重命名后的目录名：prod_cms_123_2015-08-02
     code_dir = env + "_" + svn_library + "_" + svn_ver + "_" + time_stamp
     tar_dir = deploy_tmp_dir + "/" + code_dir
     print "src_dir = %s" % src_dir
