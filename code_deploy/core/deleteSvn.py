@@ -5,7 +5,7 @@ import commands
 
 def del_svn_info(source_dir):
     if source_dir != "/":
-        cmd = "find " + source_dir + " -type d -name \.svn | xargs rm -rf"
+        cmd = "find %s -type d -name \.svn | xargs rm -rf" % source_dir
         print cmd
         status, result = commands.getstatusoutput(cmd)
         if status == 0:

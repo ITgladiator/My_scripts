@@ -15,7 +15,6 @@ svn_config = {
     "svn_url": "svn://192.168.1.221/",
     "svn_user": "deploy",
     "svn_pass": "123",
-    "svn_library": "cms"
 }
 
 deploy_config = {

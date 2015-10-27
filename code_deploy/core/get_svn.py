@@ -5,7 +5,7 @@ import commands
 
 
 def get_ver(svn_dir):
-    cmd_get_ver = "cd " + svn_dir + "&& svn info|grep Revision|awk '{print $2}'"
+    cmd_get_ver = "cd %s && svn info|grep Revision|awk '{print $2}'" % svn_dir
     status, ver = commands.getstatusoutput(cmd_get_ver)
     if status == 0:
         return ver
@@ -14,7 +14,7 @@ def get_ver(svn_dir):
 
 
 def get_code(dst_dir, svn_url, svn_user, svn_pass):
-    cmd_get_code = "cd " + dst_dir + "&& svn co " + svn_url + " --username=" + svn_user + " --password=" + svn_pass
+    cmd_get_code = "cd %s && svn co %s --username=%s --password=%s" % (dst_dir, svn_url, svn_user, svn_pass)
     status, output = commands.getstatusoutput(cmd_get_code)
     return status
 

@@ -6,7 +6,7 @@ import re
 
 
 def sendConfig(nodeName, siteName):
-    cmd = "salt \'" + nodeName + "\' state.sls " + siteName + "_config." + siteName + "_config env=prod"
+    cmd = "salt '%s' state.sls %s_config.%s_config env=prod" % (nodeName, siteName, siteName)
     status, result = commands.getstatusoutput(cmd)
     a = re.findall("Failed:    0", result)
     if len(a) != 0:

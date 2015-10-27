@@ -67,7 +67,8 @@ elif sys.argv[1] == "deploy":
         sys.exit()
 
     # 重命名后的目录名：prod_cms_123_2015-08-02
-    code_dir = env + "_" + svn_library + "_" + svn_ver + "_" + time_stamp
+    code_dir = "%s_%s_%s_%s" % (env, svn_library, svn_ver, time_stamp)
+    print "code_dir: %s" % code_dir
     tar_dir = deploy_tmp_dir + "/" + code_dir
     print "src_dir = %s" % src_dir
     print "tar_dir = %s" % tar_dir
@@ -123,17 +124,20 @@ Filename : %s\033[0m''' % full_tar_filename
     pool = Pool(processes=4)
     result_list = []
     for host in hosts_list:
-        sl_cmd = "ssh " + user + "@" + host + " ln -s " + sl_src + " " + sl_dst  # 创建软链接命令
-        rm_sl_cmd = "ssh " + user + "@" + host + " rm -f " + sl_dst  # 删除已有软链接的命令
-        untar_cmd = 'ssh ' + user + '@' + host + ' "' + 'cd ' + prod_tmp + ' && tar zxf ' + tar_filename + '"'
-#        chuser_cmd = "ssh " + user + "@" + host + " chown -R " + webuser + "." + webgroup + " " + sl_dst
+        sl_cmd = "ssh %s@%s ln -s %s %s" %(user, host, sl_src, sl_dst)
+        print sl_cmd
+        rm_sl_cmd = "ssh %s@%s rm -f %s" % (user, host, sl_dst)
+        print rm_sl_cmd
+        untar_cmd = 'ssh %s@%s "cd %s && tar zxf %s"' % (user, host, prod_tmp, tar_filename)
+        print untar_cmd
         result = pool.apply_async(send_untar_mksl, [host, port, user, pkey_file, full_tar_filename, dst_filename, untar_cmd, rm_sl_cmd, sl_cmd])
         result_list.append(result)
     for r in result_list:
         r.get()
-    rmdir_cmd = "cd " + deploy_tmp_dir + " && rm -rf " + code_dir
-    rmfile_cmd = "cd " + deploy_tmp_dir + " && rm -rf " + code_dir + ".tar.gz"
+    # rmdir_cmd = "cd " + deploy_tmp_dir + " && rm -rf " + code_dir
+    rmdir_cmd = "cd %s && rm -rf %s" % (deploy_tmp_dir, code_dir)
     print rmdir_cmd
+    rmfile_cmd = "cd %s && rm -rf %s.tar.gz" % (deploy_tmp_dir, code_dir)
     print rmfile_cmd
     os.popen(rmdir_cmd)
     os.popen(rmfile_cmd)
@@ -145,9 +149,12 @@ Filename : %s\033[0m''' % full_tar_filename
     dir_list.append(siteName+"_data")
     dir_list.append(siteName+"_Uploads")
     for ln_dir in dir_list:
+        tmpdir = ln_dir.split("_")[1]
         for host in hosts_list:
-            sl_cmd = "ssh " + user + "@" + host + " ln -s " + web_root + "/" + ln_dir + " " + sl_dst + "/"
-            rm_sl_cmd = "ssh " + user + "@" + host + " rm -rf " + sl_dst + "/" + ln_dir
+            sl_cmd = "ssh %s@%s ln -s %s/%s %s/%s" % (user, host, web_root, ln_dir, sl_dst, tmpdir)
+            print sl_cmd
+            rm_sl_cmd = "ssh %s@%s rm -rf %s/%s" % (user, host, sl_dst, tmpdir)
+            print rm_sl_cmd
             try:
                 os.popen(rm_sl_cmd)
             except:
@@ -163,7 +170,8 @@ Filename : %s\033[0m''' % full_tar_filename
     webuser = setting.deploy_config["webuser"]
     webgroup = setting.deploy_config["webuser_group"]
     for host in hosts_list:
-        chuser_cmd = "ssh " + user + "@" + host + " chown -R " + webuser + "." + webgroup + " " + sl_dst + "/"
+        chuser_cmd = "ssh %s@%s chown -R %s.%s %s/" % (user, host, webuser, webgroup, sl_dst)
+        print chuser_cmd
         chuser_status, chuser_r = commands.getstatusoutput(chuser_cmd)
         if chuser_status == 0:
             print "\033[32;1mOK! Chown the webroot on %s sucessfull!\033[0m" % host
@@ -181,7 +189,7 @@ elif sys.argv[1] == "rollback-list":
     user = setting.host_config["user"]
     prod_tmp = setting.deploy_config["prod_tmp"]
     for host in hosts_list:
-        ls_cmd = "ssh " + user + "@" + host + " ls " + prod_tmp + " | grep -v 'tar.gz'"
+        ls_cmd = "ssh %s@%s ls %s | grep -v 'tar.gz'" % (user, host, prod_tmp)
         ls_status, ls_result = commands.getstatusoutput(ls_cmd)
         if ls_status == 0:
             print '''
@@ -194,14 +202,14 @@ elif sys.argv[1] == "rollback-list":
 elif len(sys.argv) == 4 and sys.argv[1] == "rollback-pro":
     host = sys.argv[2]
     code_ver = sys.argv[3]
-    get_curr_ver_cmd = "echo " + code_ver + " | awk -F '_' '{print $3}' "
+    get_curr_ver_cmd = "echo %s |awk -F '_' '{print $3}'" % code_ver
     c_status, curr_ver = commands.getstatusoutput(get_curr_ver_cmd)
     user = setting.host_config["user"]
     prod_tmp = setting.deploy_config["prod_tmp"]
     svn_library = setting.svn_config["svn_library"]
     sl_dst = web_root + "/" + svn_library
-    rollback_cmd = "ssh " + user + "@" + host + " ln -s " + prod_tmp + "/" + code_ver + " " + web_root + "/" + svn_library
-    rm_sl_cmd = "ssh " + user + "@" + host + " rm -f " + sl_dst
+    rollback_cmd = "ssh %s@%s ln -s %s/%s %s/%s" % (user, host, prod_tmp, code_ver, web_root, svn_library)
+    rm_sl_cmd = "ssh %s@%s rm -f %s" % (user, host, sl_dst)
     try:
         os.popen(rm_sl_cmd)
     except:
@@ -211,8 +219,8 @@ elif len(sys.argv) == 4 and sys.argv[1] == "rollback-pro":
     # Upload 目录和 data目录为用户上传的文件目录，放在web根目录，软链接到程序目录
     dir_list = ["Uploads", "data"]
     for ln_dir in dir_list:
-        sl_cmd = "ssh " + user + "@" + host + " ln -s " + web_root + "/" + ln_dir + " " + sl_dst + "/"
-        rm_sl_cmd = "ssh " + user + "@" + host + " rm -rf " + sl_dst + "/" + ln_dir
+        sl_cmd = "ssh %s@%s ln -s %s/%s %s/" %(user, host, web_root, ln_dir, sl_dst)
+        rm_sl_cmd = "ssh %s@%s rm -rf %s/%s" %(user, host, sl_dst, ln_dir)
         try:
             os.popen(rm_sl_cmd)
         except:
