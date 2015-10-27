@@ -10,7 +10,7 @@ user = "root"
 prod_tmp = setting.deploy_config["prod_tmp"]
 log_file = setting.log_file
 
-cmd_ls = "ssh " + user + "@" + host + " ls " + prod_tmp + "|awk -F '_' '{print $3}'|sort -n |uniq"
+cmd_ls = "ssh %s@%s ls %s |awk -F '_' '{print $3}'|sort -n |uniq" % (user, host, prod_tmp)
 
 f = file(log_file, 'r')
 v_str = ""
@@ -39,7 +39,7 @@ else:
             max = int(i)
     v_list.remove(str(max))
     for value in v_list:
-        cmd = "ssh " + user + "@" + host + " mv " + prod_tmp + "/" + "*_" + value + "_* /tmp/"
+        cmd = "ssh %s@%s mv %s/*_%s_* /tmp/" % (user, host, prod_tmp, value)
         print cmd
         status, output = commands.getstatusoutput(cmd)
         if status == 0:
