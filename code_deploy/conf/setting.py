@@ -8,7 +8,7 @@ host_config = {
     "pkey_file": "/root/.ssh/id_rsa",
 }
 
-log_file = "/deploy/tmp/current_ver.log"
+log_dir = "/deploy/tmp/"
 
 
 svn_config = {

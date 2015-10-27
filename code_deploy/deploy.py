@@ -10,7 +10,6 @@ import shutil
 from multiprocessing import Pool
 from conf import setting
 
-log_file = setting.log_file
 web_root = setting.deploy_config["web_root"]  # 远端服务器的web根目录
 
 login_url = setting.webtest_config["login_url"]
@@ -53,6 +52,7 @@ elif sys.argv[1] == "deploy":
     env = setting.deploy_config["env"]  # 部署环境（test、prod等）
     time_stamp = time.strftime("%Y-%m-%d-%H-%M")  # 时间
     svn_ver_status = get_svn.get_ver(src_dir)  # 当前版本库版本号（svn info）
+    log_file = "%s/%s_svn_ver.log" % (setting.log_dir, siteName)
     if svn_ver_status != -1:
         svn_ver = str(svn_ver_status)
         try:
