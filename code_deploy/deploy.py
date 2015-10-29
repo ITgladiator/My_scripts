@@ -223,16 +223,30 @@ elif len(sys.argv) == 4 and sys.argv[1] == "rollback-pro":
     dir_list = []
     dir_list.append(projectName+"_data")
     dir_list.append(projectName+"_Uploads")
+    flag = 0
     for ln_dir in dir_list:
-        sl_cmd = "ssh %s@%s ln -s %s/%s %s/" %(user, host, web_root, ln_dir, sl_dst)
-        rm_sl_cmd = "ssh %s@%s rm -f %s/%s" %(user, host, sl_dst, ln_dir)
+        tmpdir = ln_dir.split("_")[1]
+        sl_cmd = "ssh %s@%s ln -s %s/%s %s/%s" % (user, host, web_root, ln_dir, sl_dst, tmpdir)
+        print sl_cmd
+        rm_sl_cmd = "ssh %s@%s rm -rf %s/%s" % (user, host, sl_dst, tmpdir)
+        print rm_sl_cmd
         try:
             os.popen(rm_sl_cmd)
         except:
             pass
         r2_status, r2_result = commands.getstatusoutput(sl_cmd)
+        if r2_status != 0:
+            flag = 1
+    # for ln_dir in dir_list:
+    #     sl_cmd = "ssh %s@%s ln -s %s/%s %s/" %(user, host, web_root, ln_dir, sl_dst)
+    #     rm_sl_cmd = "ssh %s@%s rm -f %s/%s" %(user, host, sl_dst, ln_dir)
+    #     try:
+    #         os.popen(rm_sl_cmd)
+    #     except:
+    #         pass
+    #     r2_status, r2_result = commands.getstatusoutput(sl_cmd)
     # ========================================================================================================
-    if r_status == 0 and r2_status == 0:
+    if r_status == 0 and flag == 0:
         try:
             f = file(log_file, "w")
             f.write(curr_ver)
