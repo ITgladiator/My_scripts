@@ -85,7 +85,7 @@ elif sys.argv[1] == "deploy":
         print '''\033[32;1mOK! The codes tar sucessfull!
 Filename : %s\033[0m''' % full_tar_filename
     else:
-        print "\033[31;1mERROR! The codes tar failed!\033[0m"
+        print '\033[31;1mERROR! The codes tar failed!\033[0m'
         sys.exit()
 
     # 发送打包文件到目标服务器，并解压做软连接
@@ -203,13 +203,16 @@ elif len(sys.argv) == 4 and sys.argv[1] == "rollback-pro":
     host = sys.argv[2]
     code_ver = sys.argv[3]
     get_curr_ver_cmd = "echo %s |awk -F '_' '{print $3}'" % code_ver
+    get_projectName = "echo %s |awk -F '_' '{print $2}'" % code_ver
     c_status, curr_ver = commands.getstatusoutput(get_curr_ver_cmd)
+    tmp_status, projectName = commands.getstatusoutput(get_projectName)
     user = setting.host_config["user"]
     prod_tmp = setting.deploy_config["prod_tmp"]
-    svn_library = setting.svn_config["svn_library"]
+    svn_library = projectName
     sl_dst = web_root + "/" + svn_library
     rollback_cmd = "ssh %s@%s ln -s %s/%s %s/%s" % (user, host, prod_tmp, code_ver, web_root, svn_library)
     rm_sl_cmd = "ssh %s@%s rm -f %s" % (user, host, sl_dst)
+    log_file = "%s/%s_svn_ver.log" % (setting.log_dir, projectName)
     try:
         os.popen(rm_sl_cmd)
     except:
@@ -220,7 +223,7 @@ elif len(sys.argv) == 4 and sys.argv[1] == "rollback-pro":
     dir_list = ["Uploads", "data"]
     for ln_dir in dir_list:
         sl_cmd = "ssh %s@%s ln -s %s/%s %s/" %(user, host, web_root, ln_dir, sl_dst)
-        rm_sl_cmd = "ssh %s@%s rm -rf %s/%s" %(user, host, sl_dst, ln_dir)
+        rm_sl_cmd = "ssh %s@%s rm -f %s/%s" %(user, host, sl_dst, ln_dir)
         try:
             os.popen(rm_sl_cmd)
         except:
