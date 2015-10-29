@@ -220,7 +220,9 @@ elif len(sys.argv) == 4 and sys.argv[1] == "rollback-pro":
     r_status, r_ruslt = commands.getstatusoutput(rollback_cmd)
     # ========================================================================================================
     # Upload 目录和 data目录为用户上传的文件目录，放在web根目录，软链接到程序目录
-    dir_list = ["Uploads", "data"]
+    dir_list = []
+    dir_list.append(projectName+"_data")
+    dir_list.append(projectName+"_Uploads")
     for ln_dir in dir_list:
         sl_cmd = "ssh %s@%s ln -s %s/%s %s/" %(user, host, web_root, ln_dir, sl_dst)
         rm_sl_cmd = "ssh %s@%s rm -f %s/%s" %(user, host, sl_dst, ln_dir)
