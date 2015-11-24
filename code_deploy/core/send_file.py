@@ -21,7 +21,8 @@ def sendfile(host, port, user, pkey_file, src_filename, dst_filename):
         s.close()
         status = 0
         return status
-    except:
+    except Exception, e:
+        print Exception, ":", e
         status = -1
         return status
 

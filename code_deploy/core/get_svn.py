@@ -13,8 +13,11 @@ def get_ver(svn_dir):
         return -1
 
 
-def get_code(dst_dir, svn_url, svn_user, svn_pass):
-    cmd_get_code = "cd %s && svn co %s --username=%s --password=%s" % (dst_dir, svn_url, svn_user, svn_pass)
+def get_code(dst_dir, svn_url, svn_user, svn_pass, svn_ver=None):
+    if svn_ver is None:
+        cmd_get_code = "cd %s && svn co %s --username=%s --password=%s" % (dst_dir, svn_url, svn_user, svn_pass)
+    else:
+        cmd_get_code = "cd %s && svn co -r %d %s --username=%s --password=%s" % (dst_dir, svn_ver, svn_url, svn_user, svn_pass)
     status, output = commands.getstatusoutput(cmd_get_code)
     return status
 

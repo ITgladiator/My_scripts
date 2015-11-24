@@ -4,8 +4,8 @@
 import commands
 
 
-def sendConfig(nodeName, siteName):
-    cmd = "salt '%s' state.sls %s_config.%s_config env=prod" % (nodeName, siteName, siteName)
+def sendConfig(nodeName, siteName, env):
+    cmd = "salt '%s' state.sls %s_config.%s_config env=%s" % (nodeName, siteName, siteName, env)
     status, result = commands.getstatusoutput(cmd)
     result_list = result.split('\n')
     for item in result_list:
